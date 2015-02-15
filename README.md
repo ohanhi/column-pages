@@ -1,2 +1,3 @@
 # column-pages
-Polymer element for paging text content with per-page columns
+
+See the [component page](http://ohanhi.github.io/column-pages) for more information.

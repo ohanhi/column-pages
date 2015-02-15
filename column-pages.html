@@ -1,0 +1,76 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+Element providing solution to no problem in particular.
+
+##### Example
+
+    <column-pages></column-pages>
+
+@element column-pages
+@blurb Element providing solution to no problem in particular.
+@status alpha
+@homepage http://ohanhi.github.io/column-pages
+-->
+<polymer-element name="column-pages" attributes="data">
+  <template>
+    <link rel="stylesheet" href="column-pages.css">
+    <section id="pager">
+      {{textData}}
+    </section>
+  </template>
+  <script>
+    Polymer({
+
+      /**
+       * `data` contains the text content to be paged.
+       *
+       * @property data
+       * @type String
+       * @default ""
+       */
+      data: "",
+
+      ready: function () {
+        // Ready is a lifecycle callback.
+        // You can do setup work in here.
+      },
+
+      dataChanged: function (oldValue, newValue) {
+        console.log(oldValue, newValue);
+        this.textData = newValue;
+      },
+
+      /**
+       * The `sayHello` method will return a greeting.
+       *
+       * @method sayHello
+       * @param {String} greeting Pass in a specific greeting.
+       * @return {String} Returns a string greeting.
+       */
+      sayHello: function (greeting) {
+        var response = greeting || 'Hello World!';
+        return 'column-pages says, ' + response;
+      },
+
+      /**
+       * The `column-pages-lasers-success` event is fired whenever we
+       * call fireLasers.
+       *
+       * @event column-pages-lasers-success
+       * @param {Object} detail
+       *   @param {string} detail.sound An amazing sound.
+       */
+
+      /**
+       * The `fireLasers` method will fire the lasers. At least
+       * it will dispatch an event that claims lasers were fired :)
+       *
+       * @method fireLasers
+       */
+      fireLasers: function () {
+        this.fire('column-pages-lasers-success', { sound: 'Pew pew pew!' });
+      }
+    });
+  </script>
+</polymer-element>
