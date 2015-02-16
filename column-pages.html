@@ -16,7 +16,7 @@ Element providing solution to no problem in particular.
   <template>
     <link rel="stylesheet" href="column-pages.css">
     <section id="pages"></section>
-    <section id="testContainer" class="page test">
+    <section id="testContainer" class="page-column test">
       <div id="testContent"></div>
     </section>
   </template>
@@ -35,6 +35,18 @@ Element providing solution to no problem in particular.
        */
       data: "",
 
+      /**
+       * `columns` is the number of columns to be
+       * displayed on the pages.
+       *
+       * @property columns
+       * @type number
+       * @default 2
+       */
+      columns: 2,
+
+      columnWidth: "50%",
+
       ready: function () {
         // pages is a private array
         this.pages = [];
@@ -43,13 +55,22 @@ Element providing solution to no problem in particular.
       pagesChanged: function (oldValue, newValue) {
         var pageTagStart = "<div class='page'>";
         var pageTagEnd = "</div>";
+        var columnStart = "<div class='page-column' style='width: "+this.columnWidth+"'>";
+        var columnEnd = "</div>";
 
         this.$.pages.innerHTML = "";
 
         if (newValue.length > 0) {
           var inject = "";
-          newValue.forEach(function (item) {
-            inject += pageTagStart + item + pageTagEnd;
+          var self = this;
+          newValue.forEach(function (item, index) {
+            if (index % self.columns === 0) {
+              inject += pageTagStart;
+            }
+            inject += columnStart + item + columnEnd;
+            if (index+1 % self.columns === 0) {
+              inject += pageTagEnd;
+            }
           });
 
           this.$.pages.innerHTML = inject;
@@ -63,8 +84,14 @@ Element providing solution to no problem in particular.
           parseInt(getComputedStyle(container, null).getPropertyValue('padding-bottom'), 10);
         var testEl = this.$.testContent;
         if (containerInnerHeight && testEl) {
+          testEl.style.width = this.columnWidth;
           this.pages = this.fitPages(newValue, containerInnerHeight, testEl);
         }
+      },
+
+      columnsChanged: function (oldValue, newValue) {
+        this.columnWidth = 100 / this.columns + "%";
+        this.dataChanged(this.data, this.data);
       },
 
       /**
@@ -76,7 +103,7 @@ Element providing solution to no problem in particular.
       fitPage: function (data, containerHeight, testEl) {
         var n = 0;
         var fits = "";
-        while (n <= data.length && testEl.offsetHeight < containerHeight) {
+        while (n <= data.length && testEl.scrollHeight < containerHeight) {
           fits = data.substring(0, n);
           testEl.innerHTML = fits;
           n += 1;

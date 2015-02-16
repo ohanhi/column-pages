@@ -4,20 +4,29 @@
   position: relative;
 }
 
-.page {
+.page,
+.page-column {
   box-sizing: border-box;
-  background: white;
   height: 100%;
   width: 100%;
-  border: 1px solid blue;
-  padding: 20px;
-
   font-size: 18px;
   line-height: 1.4;
   white-space: pre-wrap;
 }
 
-.page.test {
+.page {
+  background: white;
+  overflow: hidden;
+}
+
+.page-column {
+  border: 1px solid blue;
+  padding: 10px;
+  float: left;
+  text-align: justify;
+}
+
+.page-column.test {
   visibility: hidden;
   position: absolute;
   top: 0;
