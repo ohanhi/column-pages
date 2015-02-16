@@ -1,3 +1,25 @@
 :host {
   display: block;
+  overflow: scroll;
+  position: relative;
+}
+
+.page {
+  box-sizing: border-box;
+  background: white;
+  height: 100%;
+  width: 100%;
+  border: 1px solid blue;
+  padding: 20px;
+
+  font-size: 18px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+.page.test {
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
 }

@@ -15,11 +15,15 @@ Element providing solution to no problem in particular.
 <polymer-element name="column-pages" attributes="data">
   <template>
     <link rel="stylesheet" href="column-pages.css">
-    <section id="pager">
-      {{textData}}
+    <section id="pages"></section>
+    <section id="testContainer" class="page test">
+      <div id="testContent"></div>
     </section>
   </template>
   <script>
+  (function(){
+
+
     Polymer({
 
       /**
@@ -32,45 +36,77 @@ Element providing solution to no problem in particular.
       data: "",
 
       ready: function () {
-        // Ready is a lifecycle callback.
-        // You can do setup work in here.
+        // pages is a private array
+        this.pages = [];
+      },
+
+      pagesChanged: function (oldValue, newValue) {
+        var pageTagStart = "<div class='page'>";
+        var pageTagEnd = "</div>";
+
+        this.$.pages.innerHTML = "";
+
+        if (newValue.length > 0) {
+          var inject = "";
+          newValue.forEach(function (item) {
+            inject += pageTagStart + item + pageTagEnd;
+          });
+
+          this.$.pages.innerHTML = inject;
+        }
       },
 
       dataChanged: function (oldValue, newValue) {
-        console.log(oldValue, newValue);
-        this.textData = newValue;
+        var container = this.$.testContainer;
+        var containerInnerHeight = container.offsetHeight -
+          parseInt(getComputedStyle(container, null).getPropertyValue('padding-top'), 10) -
+          parseInt(getComputedStyle(container, null).getPropertyValue('padding-bottom'), 10);
+        var testEl = this.$.testContent;
+        if (containerInnerHeight && testEl) {
+          this.pages = this.fitPages(newValue, containerInnerHeight, testEl);
+        }
       },
 
       /**
-       * The `sayHello` method will return a greeting.
+       * Returns part of the text, which fits on the page container.
        *
-       * @method sayHello
-       * @param {String} greeting Pass in a specific greeting.
-       * @return {String} Returns a string greeting.
+       * @param {String} data the text content
+       * @return {String} the part of the text that fit
        */
-      sayHello: function (greeting) {
-        var response = greeting || 'Hello World!';
-        return 'column-pages says, ' + response;
+      fitPage: function (data, containerHeight, testEl) {
+        var n = 0;
+        var fits = "";
+        while (n <= data.length && testEl.offsetHeight < containerHeight) {
+          fits = data.substring(0, n);
+          testEl.innerHTML = fits;
+          n += 1;
+        }
+        // slice out the last word
+        if (n < data.length) fits = fits.substring(0, fits.lastIndexOf(" "));
+        testEl.innerHTML = "";
+        return fits;
       },
 
       /**
-       * The `column-pages-lasers-success` event is fired whenever we
-       * call fireLasers.
+       * Splits the text content so that the text fits on the page container.
        *
-       * @event column-pages-lasers-success
-       * @param {Object} detail
-       *   @param {string} detail.sound An amazing sound.
+       * @param {String} data the content to split
+       * @return {Array} an array with the fitting content as items
        */
+      fitPages: function (data, containerHeight, testEl, array) {
+        // no more data to split, ready to return
+        if (data.length <= 0) return array || [];
 
-      /**
-       * The `fireLasers` method will fire the lasers. At least
-       * it will dispatch an event that claims lasers were fired :)
-       *
-       * @method fireLasers
-       */
-      fireLasers: function () {
-        this.fire('column-pages-lasers-success', { sound: 'Pew pew pew!' });
+        var lineBreakedData = data.replace(/^\<\/?p\>/i, "").replace(/\<\/?p\>/gi, "\n");
+
+        var nextPageData = this.fitPage (lineBreakedData, containerHeight, testEl);
+        var restOfData = lineBreakedData.substring(nextPageData.length);
+        var array = array || [];
+        array.push(nextPageData);
+        return this.fitPages (restOfData, containerHeight, testEl, array);
+        return array;
       }
     });
+  })();
   </script>
 </polymer-element>
